@@ -5,12 +5,12 @@ import api from "./Ipca";
 import {Form} from "react-bootstrap";
 
 export default function App() {
+    const [dataSum, setDataSum] = React.useState(0)
     const [data, setData] = React.useState([])
-    const [init, setDateInit] = React.useState('')
-    const [final, setDateFinal] = React.useState('')
+    const [init, setDateInit] = React.useState('30/04/2021')
+    const [final, setDateFinal] = React.useState('30/04/2022')
 
-
-    const handleClick =(e) => {
+    const handleClick = (e) => {
         var [year, month, day] = init.split('-');
         const dataInicial = `${day}/${month}/${year}`;
         [year, month, day] = final.split('-');
@@ -22,7 +22,14 @@ export default function App() {
                     dataFinal: dataFinal
                 }
             })
-            .then((response) => setData(response.data))
+            .then((response) => {
+                setData(response.data);
+                var sumData = 0;
+                response.data.forEach(d => {
+                    sumData += parseFloat(d.valor);
+                })
+                setDataSum(sumData);
+            })
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);
             });
@@ -35,13 +42,17 @@ export default function App() {
                     <Form.Label>Data Inicial</Form.Label>
                     <Form.Control onChange={event => setDateInit(event.target.value)} class='col-md' type="date"/>
                     <Form.Label>Data Final</Form.Label>
-                    <Form.Control  onChange={event => setDateFinal(event.target.value)} type="date"/>
+                    <Form.Control onChange={event => setDateFinal(event.target.value)} type="date"/>
                 </Form.Group>
 
                 <a className="btn btn-primary" onClick={handleClick}>
                     Buscar
                 </a>
+
             </Form>
+            <div style={{marginTop: '20px'}} className="mb-3">
+                <p>Valor IPCA : {dataSum}</p>
+            </div>
             <div className='col-md w-100 d-flex justify-content-center'>
 
 
